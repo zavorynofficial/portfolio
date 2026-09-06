@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://zavoryn.pages.dev/sitemap.xml
