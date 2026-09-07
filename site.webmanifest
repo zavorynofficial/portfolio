@@ -1,0 +1,16 @@
+{
+  "name": "Zavoryn",
+  "short_name": "Zavoryn",
+  "description": "Digital systems for smarter businesses.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080b0d",
+  "theme_color": "#080b0d",
+  "icons": [
+    {
+      "src": "/assets/img/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
