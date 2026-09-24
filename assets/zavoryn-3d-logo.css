@@ -1,4 +1,7 @@
 /* ZAVORYN 3D logo hero */
+.hero-premium{min-height:135vh;padding:100px 0 80px;display:block}
+.hero-premium-grid{position:sticky;top:88px;min-height:calc(100vh - 118px);align-items:center}
+.hero-system-frame{position:relative;width:100%;height:100%;min-height:520px;display:grid;place-items:center;background:transparent;border:0;overflow:visible}
 .hero-premium-art{position:relative;min-height:520px;display:grid;place-items:center;isolation:isolate}
 .hero-3d-shell{position:relative;width:min(100%,620px);aspect-ratio:1/1;min-height:420px;border:1px solid rgba(255,255,255,.10);border-radius:32px;overflow:hidden;background:radial-gradient(circle at 50% 45%,rgba(200,255,34,.09),transparent 42%),linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.012));box-shadow:0 35px 100px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.04)}
 .hero-3d-shell:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(circle at center,black,transparent 78%);pointer-events:none;opacity:.55}
@@ -11,6 +14,6 @@
 .hero-3d-fallback svg{width:min(62%,300px);height:auto;filter:drop-shadow(0 0 35px rgba(200,255,34,.10))}
 .hero-3d-shell.is-fallback .hero-3d-canvas{display:none}
 .hero-3d-shell.is-fallback .hero-3d-hud:after{content:"STATIC MODE";color:var(--lime)}
-@media(max-width:980px){.hero-premium-art{min-height:430px}.hero-3d-shell{max-width:540px;min-height:360px}}
-@media(max-width:640px){.hero-premium-art{min-height:330px;margin-top:8px}.hero-3d-shell{min-height:300px;border-radius:24px}.hero-3d-hud{left:15px;right:15px;top:15px;font-size:8px}.hero-3d-footer{left:15px;right:15px;bottom:15px;font-size:8px}.hero-3d-shell:before{background-size:32px 32px}}
+@media(max-width:980px){.hero-premium{min-height:auto;padding:72px 0 58px}.hero-premium-grid{position:relative;top:auto;min-height:auto}.hero-premium-art{min-height:430px}.hero-3d-shell{max-width:540px;min-height:360px}}
+@media(max-width:640px){.hero-premium{padding:44px 0 36px}.hero-premium-art{min-height:330px;margin-top:8px}.hero-system-frame{min-height:300px}.hero-3d-shell{min-height:300px;border-radius:24px}.hero-3d-hud{left:15px;right:15px;top:15px;font-size:8px}.hero-3d-footer{left:15px;right:15px;bottom:15px;font-size:8px}.hero-3d-shell:before{background-size:32px 32px}}
 @media(prefers-reduced-motion:reduce){.hero-3d-shell:after{transform:none}.hero-3d-canvas{opacity:.96}}
