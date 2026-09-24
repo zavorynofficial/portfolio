@@ -38,16 +38,6 @@
     const stage = document.createElement('div');
     stage.className = 'hero-3d-stage';
     stage.innerHTML =
-      '<div class="hero-logo-scene" data-logo-scene>' +
-        '<div class="hero-logo-depth" data-logo-depth></div>' +
-      '</div>' +
-      '<canvas class="hero-particle-canvas" data-particles aria-hidden="true"></canvas>' +
-      '<div class="hero-3d-hud"><span>ZAVORYN / <strong>IDENTITY IN MOTION</strong></span><span data-state>ARRIVING</span></div>' +
-      '<div class="hero-3d-footer"><span>SCROLL TO TRANSFORM</span><span data-count>01 — 05</span></div>' +
-      '<div class="hero-3d-wordmark>');
-
-    // Rebuild the final two HUD elements as DOM nodes to avoid malformed template strings.
-    stage.innerHTML =
       '<div class="hero-logo-scene" data-logo-scene><div class="hero-logo-depth" data-logo-depth></div></div>' +
       '<canvas class="hero-particle-canvas" data-particles aria-hidden="true"></canvas>' +
       '<div class="hero-3d-hud"><span>ZAVORYN / <strong>IDENTITY IN MOTION</strong></span><span data-state>ARRIVING</span></div>' +
