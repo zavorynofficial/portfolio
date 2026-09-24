@@ -6,6 +6,11 @@ import * as THREE from 'https://esm.sh/three@0.180.0';
   if (!root || root.dataset.zavoryn3d === 'ready') return;
   root.dataset.zavoryn3d = 'ready';
 
+  const polygons = [
+    [[173,116],[410,116],[356,170],[356,238],[286,310],[216,310],[342,177],[112,177]],
+    [[216,204],[286,204],[161,336],[148,343],[148,273]],
+    [[148,343],[389,337],[327,397],[94,397]]
+  ];
   const paths = [
     'M173 116H410L356 170V238L286 310H216L342 177H112Z',
     'M216 204H286L161 336H148V273Z',
@@ -24,57 +29,33 @@ import * as THREE from 'https://esm.sh/three@0.180.0';
   const range = (v, a, b) => clamp((v - a) / Math.max(0.0001, b - a));
   const lerp = (a, b, t) => a + (b - a) * t;
 
-  const config = {
-    white: new THREE.Color('#f5f6ef'),
-    lime: new THREE.Color('#c8ff22'),
-    depth: 18,
-    spread: innerWidth < 700 ? 95 : 145,
-    sampleStep: innerWidth < 700 ? 5 : 3,
-    particleLimit: innerWidth < 700 ? 2600 : 7600
-  };
-
+  const config = { white: new THREE.Color('#f5f6ef'), lime: new THREE.Color('#c8ff22'), depth: 18, spread: innerWidth < 700 ? 95 : 145, sampleStep: innerWidth < 700 ? 5 : 3, particleLimit: innerWidth < 700 ? 2600 : 7600 };
   let renderer;
-  try {
-    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
-  } catch (error) {
-    shell.classList.add('is-fallback');
-    fallback.hidden = false;
-    stateLabel.textContent = 'STATIC MODE';
-    return;
-  }
+  try { renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' }); }
+  catch (error) { shell.classList.add('is-fallback'); fallback.hidden = false; stateLabel.textContent = 'STATIC MODE'; return; }
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(27, 1, 1, 2400);
   camera.position.set(0, 0, 760);
   camera.lookAt(0, 0, 0);
   scene.add(new THREE.AmbientLight(0xffffff, 2.1));
-  const key = new THREE.DirectionalLight(0xffffff, 3.2);
-  key.position.set(-220, 280, 480);
-  scene.add(key);
-  const rim = new THREE.PointLight(0xc8ff22, 8, 950, 2);
-  rim.position.set(260, -120, 320);
-  scene.add(rim);
+  const key = new THREE.DirectionalLight(0xffffff, 3.2); key.position.set(-220, 280, 480); scene.add(key);
+  const rim = new THREE.PointLight(0xc8ff22, 8, 950, 2); rim.position.set(260, -120, 320); scene.add(rim);
 
   const logoGroup = new THREE.Group();
   const meshGroup = new THREE.Group();
-  logoGroup.add(meshGroup);
-  scene.add(logoGroup);
+  logoGroup.add(meshGroup); scene.add(logoGroup);
   const material = new THREE.MeshStandardMaterial({ color: config.white, roughness: 0.31, metalness: 0.18, side: THREE.DoubleSide, transparent: true });
   const meshes = [];
 
-  paths.forEach(pathData => {
+  polygons.forEach(points => {
     const shape = new THREE.Shape();
-    const commands = pathData.match(/[A-Z][^A-Z]*/g) || [];
-    commands.forEach((command, index) => {
-      const type = command[0];
-      const values = command.slice(1).trim().split(/[ ,]+/).filter(Boolean).map(Number);
-      if (type === 'M') shape.moveTo(values[0] - 256, 256 - values[1]);
-      if (type === 'L') shape.lineTo(values[0] - 256, 256 - values[1]);
-      if (type === 'H') shape.lineTo(values[0] - 256, shape.currentPoint?.y || 0);
-      if (type === 'V') shape.lineTo(shape.currentPoint?.x || 0, 256 - values[0]);
-      if (type === 'Z') shape.closePath();
-      if (index === commands.length - 1) shape.closePath();
+    points.forEach(([x, y], index) => {
+      const px = x - 256;
+      const py = 256 - y;
+      if (index === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
     });
+    shape.closePath();
     const geometry = new THREE.ExtrudeGeometry(shape, { depth: config.depth, bevelEnabled: true, bevelSegments: 2, bevelSize: 1.8, bevelThickness: 1.8, curveSegments: 3 });
     geometry.translate(0, 0, -config.depth / 2);
     geometry.computeVertexNormals();
@@ -101,11 +82,7 @@ import * as THREE from 'https://esm.sh/three@0.180.0';
     sampleContext.drawImage(sampleImage, 0, 0, 512, 512);
     const pixels = sampleContext.getImageData(0, 0, 512, 512).data;
     const points = [];
-    for (let y = 0; y < 512; y += config.sampleStep) {
-      for (let x = 0; x < 512; x += config.sampleStep) {
-        if (pixels[(y * 512 + x) * 4 + 3] > 90) points.push([x, y]);
-      }
-    }
+    for (let y = 0; y < 512; y += config.sampleStep) for (let x = 0; x < 512; x += config.sampleStep) if (pixels[(y * 512 + x) * 4 + 3] > 90) points.push([x, y]);
     const stride = Math.max(1, Math.ceil(points.length / config.particleLimit));
     for (let i = 0; i < points.length; i += stride) {
       const [x, y] = points[i];
@@ -114,11 +91,8 @@ import * as THREE from 'https://esm.sh/three@0.180.0';
       if (direction.lengthSq() < 0.01) direction.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
       direction.normalize();
       const target = base.clone().add(direction.multiplyScalar(config.spread * (0.45 + Math.random() * 0.9)));
-      target.x += (Math.random() - 0.5) * 75;
-      target.y += (Math.random() - 0.5) * 75;
-      target.z += (Math.random() - 0.5) * 130;
-      assembled.push(base.x, base.y, base.z);
-      dispersed.push(target.x, target.y, target.z);
+      target.x += (Math.random() - 0.5) * 75; target.y += (Math.random() - 0.5) * 75; target.z += (Math.random() - 0.5) * 130;
+      assembled.push(base.x, base.y, base.z); dispersed.push(target.x, target.y, target.z);
     }
     particleGeometry = new THREE.BufferGeometry();
     particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(assembled.slice(), 3));
@@ -141,7 +115,6 @@ import * as THREE from 'https://esm.sh/three@0.180.0';
     material.color.copy(config.white).lerp(config.lime, colorProgress);
     material.opacity = clamp(1 - disintegrate * 1.25 + reassemble * 1.25);
     meshGroup.visible = material.opacity > 0.02;
-
     if (particles && particleGeometry) {
       const positions = particleGeometry.attributes.position.array;
       const amount = Math.min(disintegrate, 1 - reassemble);
@@ -158,46 +131,14 @@ import * as THREE from 'https://esm.sh/three@0.180.0';
     stateLabel.textContent = p < 0.25 ? 'ASSEMBLED' : p < 0.63 ? 'DISINTEGRATING' : p < 0.76 ? 'TRANSFORMING' : 'REASSEMBLING';
   };
 
-  const resize = () => {
-    const rect = shell.getBoundingClientRect();
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.8));
-    renderer.setSize(rect.width, rect.height, false);
-    camera.aspect = rect.width / Math.max(1, rect.height);
-    camera.updateProjectionMatrix();
-  };
-  resize();
-  window.addEventListener('resize', resize, { passive: true });
-
-  let target = 0;
-  let progress = 0;
+  const resize = () => { const rect = shell.getBoundingClientRect(); renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.8)); renderer.setSize(rect.width, rect.height, false); camera.aspect = rect.width / Math.max(1, rect.height); camera.updateProjectionMatrix(); };
+  resize(); window.addEventListener('resize', resize, { passive: true });
+  let target = 0, progress = 0;
   const hero = document.querySelector('.hero-premium');
-  const readScroll = () => {
-    if (!hero || reduceMotion) return;
-    const rect = hero.getBoundingClientRect();
-    const travel = Math.max(1, hero.offsetHeight - window.innerHeight * 0.18);
-    target = clamp((-rect.top + window.innerHeight * 0.08) / travel);
-  };
-  window.addEventListener('scroll', readScroll, { passive: true });
-  readScroll();
-
+  const readScroll = () => { if (!hero || reduceMotion) return; const rect = hero.getBoundingClientRect(); const travel = Math.max(1, hero.offsetHeight - window.innerHeight * 0.18); target = clamp((-rect.top + window.innerHeight * 0.08) / travel); };
+  window.addEventListener('scroll', readScroll, { passive: true }); readScroll();
   let last = 0;
-  const frame = time => {
-    const delta = Math.min(0.05, (time - last) / 1000 || 0.016);
-    last = time;
-    progress += (target - progress) * Math.min(1, delta * 8.5);
-    update(progress, time);
-    renderer.render(scene, camera);
-    requestAnimationFrame(frame);
-  };
+  const frame = time => { const delta = Math.min(0.05, (time - last) / 1000 || 0.016); last = time; progress += (target - progress) * Math.min(1, delta * 8.5); update(progress, time); renderer.render(scene, camera); requestAnimationFrame(frame); };
   requestAnimationFrame(frame);
-
-  window.addEventListener('pagehide', () => {
-    window.removeEventListener('scroll', readScroll);
-    window.removeEventListener('resize', resize);
-    renderer.dispose();
-    particleGeometry?.dispose();
-    particleMaterial?.dispose();
-    material.dispose();
-    meshes.forEach(mesh => mesh.geometry.dispose());
-  }, { once: true });
+  window.addEventListener('pagehide', () => { window.removeEventListener('scroll', readScroll); window.removeEventListener('resize', resize); renderer.dispose(); particleGeometry?.dispose(); particleMaterial?.dispose(); material.dispose(); meshes.forEach(mesh => mesh.geometry.dispose()); }, { once: true });
 })();
