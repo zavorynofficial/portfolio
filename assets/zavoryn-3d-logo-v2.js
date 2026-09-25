@@ -293,12 +293,14 @@
           'translate3d('+(k.x*stageW)+'px,'+lerp(-stageH*1.08,targetY,e)+'px,0) '+
           'translate(-50%,-50%) scale('+lerp(.42,k.s,e)+') rotateX('+lerp(.25,k.rx,e)+'rad) rotateY('+lerp(-.7,k.ry,e)+'rad) rotateZ('+lerp(-.08,k.rz,e)+'rad)';
         scene.style.opacity=String(e);
+        return true;
       }
+      return false;
     };
 
     const frame=time=>{
-      entrance();
-      update(time);
+      const entering=entrance();
+      if(!entering) update(time);
       if(time-loadStart>80) wrap.classList.add('is-ready');
       raf=requestAnimationFrame(frame);
     };
