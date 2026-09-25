@@ -30,6 +30,7 @@
 }
 .hero-premium-grid{
   position:relative;
+  display:block;
   width:min(calc(100% - 40px),var(--max));
   min-height:150vh;
   margin:auto;
